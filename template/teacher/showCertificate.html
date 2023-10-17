@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'css/resp.main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'font_awesome/css/all.min.css' %}" type="text/css" media="all">
+</head>
+<body>
+    <div class="main-div">
+        <div class="main-error-div">
+            {% if signupError %}
+            <div class="error-div">
+                <span class="error">Please fill up all the details!</span>
+            </div>
+            {% endif %}
+            {% if idError %}
+                <div class="error-div">
+                    <span class="error">student email id is Incorrect!</span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-div">
+             <form action="/showCertificatePost" method="post">
+                {% csrf_token %}
+                <div class="para-div">
+                    <h3>Welcome Teacher!</h3>
+                    <p>Please enter your student details for see the certificate!</p>
+                </div>
+                <div class="email-div">
+                    <label for="">Email-id:</label>
+                    <input type="email" placeholder="Enter student Email-id." name="email" >
+                </div>
+                <div class="submit-div">
+                    <input type="submit" value="Show">
+                    <p>For Home <a href="/teacherHome">Click Here</a></p>
+                </div>
+             </form>
+        </div>
+    </div>
+</body>
+</html>

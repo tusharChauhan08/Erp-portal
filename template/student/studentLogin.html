@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'css/resp.main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'font_awesome/css/all.min.css' %}" type="text/css" media="all">
+</head>
+<body>
+    <div class="main-div">
+        <div class="main-error-div">
+            {% if signupError %}
+            <div class="error-div">
+                <span class="error">Please fill up all the details!</span>
+            </div>
+            {% endif %}
+            {% if idError %}
+                <div class="error-div">
+                    <span class="error">You are not register. Please try to Contact your Teacher!</span>
+                </div>
+            {% endif %}
+            {% if passSetError %}
+                <div class="error-div">
+                    <span class="error">Student DOB is Incorrect!</span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-div">
+             <form action="/studentHome/studentLoginPost" method="post">
+                {% csrf_token %}
+                <div class="para-div">
+                    <h3>Welcome Student!</h3>
+                    <p>Please enter your details to login!</p>
+                </div>
+                <div class="email-div">
+                    <label for="">Email-id:</label>
+                    <input type="email" placeholder="Enter your Email-id." name="email" >
+                </div>
+                <div class="password-div">
+                    <label for="">Student-DOB:</label>
+                    <input type="date" placeholder="Enter your date of birth." name="dob">
+                </div>
+                <div class="submit-div">
+                    <input type="submit" value="Login">
+                </div>
+             </form>
+        </div>
+    </div>
+</body>
+</html>

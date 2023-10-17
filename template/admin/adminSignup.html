@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin Panel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'css/resp.main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'font_awesome/css/all.min.css' %}" type="text/css" media="all">
+</head>
+<body>
+  <div class="main-div">
+          <div class="main-error-div">
+              {% if signupError %}
+                <div class="error-div">
+                    <span class="error">Please fill up all the details!</span>
+                </div>
+              {% endif %}
+            {% if idError %}
+                <div class="error-div">
+                    <span class="error">You are already register. Please try to login!</span>
+                </div>
+            {% endif %}
+            {% if passSetError %}
+                <div class="error-div">
+                    <span class="error">Please set your password with in the instructions.</span>
+                </div>
+            {% endif %}
+      </div>
+      <div class="form-div">
+         <form action="/adminSignup/signupPost" method="post">
+            {% csrf_token %}
+            <div class="para-div">
+                <h3>Welcome Admin!</h3>
+                <p>Please register your account here!</p>
+            </div>
+            <div class="name-div">
+                <label for="">Name:</label>
+                <input type="text" placeholder="Enter your name." name="name">
+            </div>
+            <div class="mobile-div">
+                <label for="">Mobile-no:</label>
+                <input type="text" placeholder="Enter your mobile number." name="mobile">
+            </div>
+            <div class="email-div">
+                <label for="">Email-id:</label>
+                <input type="email" placeholder="Enter your email id." name="email">
+            </div>
+            <div class="password-div">
+                <label for="">Password:</label>
+                <input type="password" placeholder="Enter your password." name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" id="password-id">
+            </div>
+            <div class="submit-div">
+                <input type="submit" value="SignUp">
+                <p>For login <a href="/adminLogin">Click Here</a></p>
+            </div>
+        </form>
+      </div>
+        <div class="message-box" id="message-box">
+                <h1>Password must be contain these things.</h1>
+                <p id="lower" class="invalid">Must be contain at least one lowercase Letter.</p>
+                <p id="upper" class="invalid">Must be contain at least one uppercase Letter.</p>
+                <p id="num" class="invalid">Must be contain at least one number.</p>
+                <p id="letter" class="invalid">Must be contain at least 8 or more characters.</p>
+        </div>
+    </div>
+  <script src="{% static 'JQuery/jquery-3.6.1.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

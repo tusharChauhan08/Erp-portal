@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'css/resp.main.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="{% static 'font_awesome/css/all.min.css' %}" type="text/css" media="all">
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" type="text/css" media="all">
+</head>
+<body>
+<div class="main-div">
+    <header>
+        <nav>
+          {% load static %}
+          <div class="logo-div">
+            <img src="{% static 'img/PngItem_254317.png' %}" alt="">
+          </div>
+          <div class="icon-div" >
+            <i class="fa-solid fa-bars"></i>
+          </div>
+          <div class="info-div">
+              <div class="teacher-div">
+                  <a href="/teacherHome/createCertificate"><i class="fa-solid fa-stamp"></i>Create Student Certificates</a>
+              </div>
+              <div class="teacher-div">
+                  <a href="/showCertificate"><i class="fa-solid fa-certificate"></i>Show Student Certificate</a>
+              </div>
+              <div class="teacher-div">
+                <a href="/teacherHome/createStudent"><i class="fa-solid fa-graduation-cap"></i>Register Student</a>
+              </div>
+            {%if logoutOpt %}
+              <div class="logout-div">
+                <a href="/teacherLogout"><i class="fa-solid fa-user"></i>Logout</a>
+              </div>
+            {% endif %}
+          </div>
+        </nav>
+    </header>
+    <section>
+        <div class="table-div">
+            <table class="adminTable">
+                <thead>
+                    <tr>
+                        <td>Student-Name</td>
+                        <td>Mobile-no.</td>
+                        <td>Email-id</td>
+                        <td>D-O-B</td>
+                        <td>Course</td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for i in studentResult %}
+                    <tr>
+                        <td>{{i.Name}}</td>
+                        <td>{{i.Mobile_no}}</td>
+                        <td>{{i.Email_id}}</td>
+                        <td>{{i.Student_DOB}}</td>
+                        <td>{{i.Course}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <script src="{% static 'JQuery/jquery-3.6.1.min.js' %}"></script>
+    <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</div>
+
+</body>
+</html>
