@@ -42,6 +42,8 @@ urlpatterns = [
     path('teacherHome/certificatePost', edutechObj.createCertificatePost),
     path('showCertificate', edutechObj.showCertificate),
     path('showCertificatePost', edutechObj.showCertificatePost),
+    path('teacherShowCertificate', edutechObj.teacherShowCertificate),
+    
     # routes for the student of the institute
     path('studentHome', edutechObj.studentHome),
     path('studentLogin', edutechObj.studentLogin),

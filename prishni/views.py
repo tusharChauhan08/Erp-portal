@@ -13,6 +13,7 @@ class Prishni:
         self.result = [0]
         self.adminId = ''
         self.teachId = ''
+        self.studentId = ''
         try:
             self.connection = pymongo.MongoClient('mongodb://127.0.0.1:27017')
             self.database = self.connection['Prishni']
@@ -30,13 +31,8 @@ class Prishni:
 
     # Home Page
     def adminHome(self, request):
-        if request.session['user'] != 'default':
+        if request.session.has_key('user'):
             self.logoutOpt = True
-            self.adminQuery = {
-                'Email_id': request.session['user']
-            }
-            for self.x in self.collection1.find(self.adminQuery):
-                self.adminId = self.x["_id"]
             self.query = {
                 'Admin_id': self.adminId,
             }
@@ -105,9 +101,6 @@ class Prishni:
 
     # Admin Login
     def adminLogin(self, request):
-        request.session['user'] = 'default'
-        request.session['teacherUser'] = 'default'
-        request.session['studentUser'] = 'default'
         return render(request, 'admin/adminLogin.html',{'passSetError': self.passSetError, 'signupError': self.signupError, 'idError': self.idError})
 
     def adminLoginPost(self, request):
@@ -129,6 +122,7 @@ class Prishni:
                         self.passSetError = False
                         self.logoutOpt = True
                         request.session['user'] = self.email
+                        self.adminId = self.result[0]['_id']
                         return redirect('/adminHome?=success')
                     else:
                         self.passSetError = True
@@ -146,7 +140,7 @@ class Prishni:
             return redirect('/adminLogin?=serverFail')
 
     def createTeacher(self, request):
-        if request.session['user'] != "default":
+        if request.session.has_key('user'):
             return render(request, 'admin/createTeacher.html',{'signupError': self.signupError, 'idError': self.idError})
         else:
             return redirect('/adminLogin?=notAuthorized')
@@ -159,11 +153,6 @@ class Prishni:
                 self.email = request.POST.get('email')
                 self.teacherId = request.POST.get('teacherId')
                 self.course = request.POST.get('course')
-                self.adminQuery = {
-                    'Email_id': request.session['user']
-                }
-                for self.x in self.collection1.find(self.adminQuery):
-                    self.adminId = self.x['_id']
                 self.data = ({
                     'Name': self.name,
                     'Mobile_no': self.mobile,
@@ -178,12 +167,12 @@ class Prishni:
                 self.result = [0]
                 for self.x in self.collection2.find(self.query):
                     self.result[0] = self.x
-                if self.result[0] == 0 and self.name != "" and self.mobile != "" and self.email != ""  and self.teacherId != "":
+                if self.result[0] == 0 and self.name != "" and self.mobile != "" and self.email != ""  and self.teacherId != "" and self.course != "":
                     self.signupError = False
                     self.idError = False
                     self.collection2.insert_many([self.data])
                     return redirect("/createTeacher?=success")
-                elif self.name == "" or self.mobile == "" or self.email == "" or self.password == "" or self.teacherId == "":
+                elif self.name == "" or self.mobile == "" or self.email == ""  or self.teacherId == "" or self.course == "":
                     self.idError = False
                     self.signupError = True
                     return redirect("/createTeacher?=notAllFill")
@@ -201,13 +190,8 @@ class Prishni:
         return redirect('/?=logoutSuccessfully')
     # Teacher Dashboard
     def teacherHome(self, request):
-        if request.session['teacherUser'] != 'default' or request.session['user'] != 'default':
+        if request.session.has_key('teacherUser') or request.session.has_key('user'):
             self.logoutOpt = True
-            self.teacherQuery = {
-                "Email_id": request.session['teacherUser']
-            }
-            for self.x in self.collection2.find(self.teacherQuery):
-                self.teachId = self.x["_id"]
             self.studentResult = []
             self.studentQuery = {
                 "Teacher_id": self.teachId,
@@ -222,9 +206,6 @@ class Prishni:
 
     # Teacher Login
     def teacherLogin(self, request):
-        request.session['user'] = 'default'
-        request.session['teacherUser'] = 'default'
-        request.session['studentUser'] = 'default'
         return render(request, 'teacher/teacherLogin.html',{'signupError': self.signupError, 'idError': self.idError, 'passSetError': self.passSetError})
 
     def teacherLoginPost(self, request):
@@ -235,7 +216,6 @@ class Prishni:
                 self.query = {
                     "Email_id": self.email,
                 }
-                print("null")
                 self.result = [0]
                 for self.x in self.collection2.find(self.query):
                      self.result[0] = self.x
@@ -245,13 +225,13 @@ class Prishni:
                     if self.result[0]["Teacher_id"] == self.teacherId:
                         self.passSetError = False
                         self.logoutOpt = True
-                        print('second nulll')
                         request.session['teacherUser'] = self.email
+                        self.teachId = self.result[0]['_id']
                         return redirect('/teacherHome?=success')
                     else:
                         self.passSetError = True
                         return redirect('/?=passwordFailed')
-                elif self.email == '' or self.password == "":
+                elif self.email == '' or self.teacherId == "":
                     self.idError = False
                     self.signupError = True
                     return redirect('/?=idNotFound')
@@ -265,7 +245,7 @@ class Prishni:
 
     # Create Student
     def createStudent(self, request):
-        if request.session['teacherUser'] != 'default':
+        if request.session.has_key('teacherUser'):
             return render(request, 'teacher/createStudent.html', {'signupError': self.signupError, 'idError': self.idError})
         else:
             return redirect('/teacherHome?=notAuthorized')
@@ -278,11 +258,6 @@ class Prishni:
                 self.email = request.POST.get('email')
                 self.dob = request.POST.get('dob')
                 self.course = request.POST.get('course')
-                self.teacherQuery = {
-                    'Email_id': request.session['teacherUser']
-                }
-                for self.x in self.collection2.find(self.teacherQuery):
-                    self.teachId = self.x['_id']
                 self.data = ({
                     'Name': self.name,
                     'Mobile_no': self.mobile,
@@ -297,12 +272,12 @@ class Prishni:
                 self.result = [0]
                 for self.x in self.collection3.find(self.query):
                     self.result[0] = self.x
-                if self.result[0] == 0 and self.name != "" and self.mobile != "" and self.email != "" and self.dob != "":
+                if self.result[0] == 0 and self.name != "" and self.mobile != "" and self.email != "" and self.dob != "" and self.course != "":
                     self.signupError = False
                     self.idError = False
                     self.collection3.insert_many([self.data])
                     return redirect("/teacherHome/createStudent?=success")
-                elif self.name == "" or self.mobile == "" or self.email == "" or self.password == "" or self.dob == "":
+                elif self.name == "" or self.mobile == "" or self.email == "" or self.dob == "" or self.course == "":
                     self.idError = False
                     self.signupError = True
                     return redirect("/teacherHome/createStudent?=notAllFill")
@@ -314,48 +289,11 @@ class Prishni:
             print("Data is not Fetched from the database.")
             return redirect("/teacherHome?=serverFail")
 
-    def showCertificate(self, request):
-        if request.session['teacherUser'] != 'default':
-            return render(request, 'teacher/showCertificate.html',{'signupError': self.signupError, 'idError': self.idError})
-        else:
-            return redirect('/teacherHome?=notAuthorized')
 
-    def showCertificatePost(self, request):
-        try:
-            if request.method == "POST":
-                self.email = request.POST.get('email')
-                self.teacherQuery = {
-                    'Email_id': request.session['teacherUser'],
-                }
-                for self.x in self.collection2.find(self.teacherQuery):
-                    self.teachId = self.x['_id']
-                self.query = {
-                    "Email_id": self.email,
-                    "Teacher_id": self.teachId
-                }
-                self.result = [0]
-                for self.x in self.collection4.find(self.query):
-                    self.result[0] = self.x
-                if self.email != '' and self.result[0] != 0:
-                    self.signupError = False
-                    self.idError = False
-                    request.session['studentUser'] = self.email
-                    return redirect('/studentCertificate?=success')
-                elif self.email == '':
-                    self.idError = False
-                    self.signupError = True
-                    return redirect('/showCertificate?=idNotFound')
-                else:
-                    self.signupError = False
-                    self.idError = True
-                    return redirect('/showCertificate?=entryNotFull')
-        except:
-            print("Data is not fetched from the database.")
-            return redirect('/teacherHome?=serverFail')
 
     # Create Certificate
     def createCertificate(self, request):
-        if request.session['teacherUser'] != 'default':
+        if request.session.has_key('teacherUser'):
             return render(request, 'teacher/certificateInfo.html', {'signupError': self.signupError, 'idError': self.idError})
         else:
             return redirect('/teacherLogin?=notAuthorized')
@@ -369,12 +307,6 @@ class Prishni:
                 self.endDate = request.POST.get('endDate')
                 self.marks = request.POST.get('marks')
                 self.email = request.POST.get('email')
-                self.teacherQuery = {
-                    'Email_id': request.session['teacherUser']
-                }
-                for self.x in self.collection2.find(self.teacherQuery):
-                    self.teachId = self.x['_id']
-
                 self.studentQuery = {
                     'Email_id': self.email,
                     'Teacher_id': self.teachId,
@@ -408,6 +340,57 @@ class Prishni:
             print("Data is not Fetched from the database.")
             return redirect("/teacherHome?=serverFail")
 
+
+    # This is for the teacher to show the student certificate by his dashboard
+    def showCertificate(self, request):
+        if request.session.has_key('teacherUser'):
+            return render(request, 'teacher/showCertificate.html',{'signupError': self.signupError, 'idError': self.idError})
+        else:
+            return redirect('/teacherHome?=notAuthorized')
+
+    def showCertificatePost(self, request):
+        try:
+            if request.method == "POST":
+                self.email = request.POST.get('email')
+                self.query = {
+                    "Email_id": self.email,
+                    "Teacher_id": self.teachId
+                }
+                self.result = [0]
+                for self.x in self.collection4.find(self.query):
+                    self.result[0] = self.x
+                if self.email != '' and self.result[0] != 0:
+                    self.signupError = False
+                    self.idError = False
+                    request.session['studentEmail'] = self.email
+                    return redirect('/teacherShowCertificate?=success')
+                elif self.email == '':
+                    self.idError = False
+                    self.signupError = True
+                    return redirect('/showCertificate?=idNotFound')
+                else:
+                    self.signupError = False
+                    self.idError = True
+                    return redirect('/showCertificate?=entryNotFull')
+        except:
+            print("Data is not fetched from the database.")
+            return redirect('/teacherHome?=serverFail')
+
+    # Teacher Show url for student certificate
+    def teacherShowCertificate(self, request):
+        if request.session.has_key('teacherUser'):
+            self.studentQuery = {
+                "Email_id": request.session['studentEmail'],
+            }
+            self.studentResult = [0]
+            for self.x in self.collection4.find(self.studentQuery):
+                self.studentResult[0] = self.x
+            return render(request, 'student/studentCertificate.html', {'studentResult': self.studentResult})
+        else:
+            return redirect('/studentLogin?=notAuthorized')
+
+
+
     # student logout
     def studentLogout(self, request):
         request.session.flush()
@@ -415,16 +398,10 @@ class Prishni:
 
     # Student View
     def studentHome(self, request):
-        if request.session['studentUser'] != 'default':
+        if request.session.has_key('studentUser'):
             self.logoutOpt = True
-            self.studentQuery = {
-                'Email_id': request.session['studentUser'],
-            }
-            self.id = ''
-            for self.x in self.collection3.find(self.studentQuery):
-                self.id = self.x['Teacher_id']
             self.teacherQuery = {
-                "_id": self.id,
+                "_id": self.studentId,
             }
             self.teacherResult = []
             for self.x in self.collection2.find(self.teacherQuery):
@@ -436,9 +413,6 @@ class Prishni:
 
     # student Login
     def studentLogin(self, request):
-        request.session['user'] = 'default'
-        request.session['teacherUser'] = 'default'
-        request.session['studentUser'] = 'default'
         return render(request, 'student/studentLogin.html',{'signupError': self.signupError, 'idError': self.idError})
     def studentLoginPost(self, request):
         try:
@@ -458,11 +432,12 @@ class Prishni:
                         self.passSetError = False
                         self.logoutOpt = True
                         request.session['studentUser'] = self.email
+                        self.studentId = self.result[0]['Teacher_id']
                         return redirect('/studentHome?=success')
                     else:
                         self.passSetError = True
                         return redirect('/studentLogin?=passwordFailed')
-                elif self.email == '' or self.password == "":
+                elif self.email == '' or self.dob == "":
                     self.idError = False
                     self.signupError = True
                     return redirect('/studentLogin?=idNotFound')
@@ -475,8 +450,10 @@ class Prishni:
             return redirect('/studentHome?=serverFail')
 
 
+    # Student Certificate show url
     def studentCertificate(self, request):
-        if request.session['teacherUser'] != 'default' or request.session['studentUser'] != 'default' or request.session['user'] != 'default':
+        print(request.session.has_key('studentUser'))
+        if request.session.has_key('studentUser'):
             self.studentQuery = {
                 "Email_id": request.session['studentUser'],
             }
